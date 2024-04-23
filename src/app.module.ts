@@ -1,12 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PackStatusController } from './pack_status/pack_status.controller';
-import { PackStatusService } from './pack_status/pack_status.service';
-import { PackStatusModule } from './pack_status/pack_status.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DatabaseModule } from 'repository/database.module';
+import { PackModule } from './pack/pack.module';
 
 @Module({
-  imports: [PackStatusModule],
-  // controllers: [AppController, PackStatusController],
-  // providers: [AppService, PackStatusService],
+  imports: [PackModule, DatabaseModule],
 })
-export class AppModule { }
+export class AppModule {}
