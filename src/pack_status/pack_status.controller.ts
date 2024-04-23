@@ -1,8 +1,9 @@
-import { Controller, Get, Param, Put, Body, Post, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, Param, Put, Body, Post, HttpStatus, Res, BadRequestException, Delete } from '@nestjs/common';
 import { PackStatusService } from './pack_status.service';
 import { Response } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { PackStatus } from './pack_status.model';
+import { SetPackStatusDto } from './dto/set-pack-status.dto';
 
 
 @Controller('pack-status')
@@ -10,23 +11,24 @@ export class PackStatusController {
     constructor(private readonly packStatusService: PackStatusService) { }
 
     @Get()
-    async getPackStatus(@Res() res): Promise<PackStatus> {
-        const status = await this.packStatusService.getStatus();
-        return res.status(HttpStatus.OK).json(status);
+    async getPackStatus(): Promise<PackStatus> {
+        return await this.packStatusService.getStatus();
+        // return res.status(HttpStatus.OK).json(status);
     }
 
     @Post()
-    async setPackStatus(
-        @Body() { status, timeLeft }: PackStatus,
-        @Res() res,
+    async createTimer(
+        @Body() dto: SetPackStatusDto,
     ): Promise<void> {
         try {
-            await this.packStatusService.setStatus(status, timeLeft);
-            res.status(HttpStatus.CREATED).send();
+           return  await this.packStatusService.startTimer(dto.timeLeft);
         } catch (error) {
-            res.status(HttpStatus.BAD_REQUEST).json({ message: error.message });
+            throw new BadRequestException({message: "Invalid input data"})
         }
     }
 
-
+    @Delete()
+    async stopTimer(){
+        return await this.packStatusService.stopTimer();
+    }
 }

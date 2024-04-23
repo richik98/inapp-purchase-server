@@ -4,40 +4,39 @@ import { PackStatus } from './pack_status.model';
 
 @Injectable()
 export class PackStatusService {
-    private currentStatus: PackStatus = { status: 0 }; // Initial inactive state
-
+    private currentStatus: PackStatus; // Initial inactive state
+    constructor(){
+        this.currentStatus = { status: false,  timeLeft: 0}
+    }
     async getStatus(): Promise<PackStatus> {
         return this.currentStatus;
+        // return { status: false,  timeLeft: 0};
     }
 
-    async setStatus(status: number, timeLeft?: number): Promise<void> {
-        if (status !== 0 && status !== 1) {
-            throw new Error('Invalid pack status value');
-        }
+    // async setStatus(timeLeft: number): Promise<void> {
+    //     // Update status and optionally start timer
+    //     // if (timeLeft) 
+    //         this.startTimer(timeLeft);
+    // }
 
-        if (status === 1 && !timeLeft) {
-            throw new Error('Time left is required for active status');
-        }
-
-        // Update status and optionally start timer
-        this.currentStatus.status = status;
-        if (timeLeft) {
-            this.startTimer(timeLeft);
-        } else {
-            this.currentStatus.timeLeft = undefined; // Clear timeLeft for inactive
-        }
-    }
-
-    private async startTimer(timeLeft: number) {
-        const timeout = timeLeft * 60 * 60 * 1000; // Convert hours to milliseconds
+    async startTimer(timeLeft: number) {
+        // const timeout = timeLeft * 60 * 60 * 1000; // Convert hours to milliseconds
+        const timeout = timeLeft; // Convert hours to milliseconds
+        this.currentStatus.status = true;
 
         setTimeout(async () => {
             try {
-                await this.setStatus(0); // Set to inactive after timeout
+                // await this.setStatus(true); // Set to inactive after timeout
+                // this.currentStatus.status = false
+                await this.stopTimer()
             } catch (error) {
                 console.error('Error setting status to inactive:', error);
             }
         }, timeout);
+    }
+
+    public async stopTimer(){
+        return this.currentStatus.status = false
     }
 
 
