@@ -13,7 +13,6 @@ export class PackStatusController {
     @Get()
     async getPackStatus(): Promise<PackStatus> {
         return await this.packStatusService.getStatus();
-        // return res.status(HttpStatus.OK).json(status);
     }
 
     @Post()
