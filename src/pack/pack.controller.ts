@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Body, Post, BadRequestException, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Body, Post, BadRequestException, Delete, Query } from '@nestjs/common';
 import { SetPackStatusDto } from './dto/set-pack-status.dto';
 import { PackDocument } from 'src/schemas/pack.schema';
 import { PackService } from './pack.service';
@@ -7,9 +7,14 @@ import { PackService } from './pack.service';
 export class PackController {
     constructor(private readonly packStatusService: PackService) { }
 
-    @Get(':id')
-    async findPack(@Param('id') packId: string): Promise<PackDocument> {
-        return await this.packStatusService.getStatus(packId);
+    //@Get(':id')
+    // async findPack(@Param('id') packId: string): Promise<PackDocument> {
+    //     return await this.packStatusService.getStatus(packId);
+    // }
+
+    @Get()
+    async findPack(@Query('packName') packName: string): Promise<PackDocument> {
+        return await this.packStatusService.getStatus(packName);
     }
 
     @Post()
@@ -17,14 +22,14 @@ export class PackController {
         @Body() dto: SetPackStatusDto,
     ): Promise<PackDocument> {
         try {
-           return await this.packStatusService.startTimer(dto.expireTime);
+            return await this.packStatusService.startTimer(dto.expireTime, dto.packName);
         } catch (error) {
-            throw new BadRequestException({message: "Invalid input data"})
+            throw new BadRequestException({ message: "Invalid input data" })
         }
     }
 
-    @Delete(':id')
-    async stopTimer(@Param('id') packId: string){
-        return await this.packStatusService.stopTimer(packId);
+    @Delete(':packName')
+    async stopTimer(@Param('packName') packName: string) {
+        return await this.packStatusService.stopTimer(packName);
     }
 }
